@@ -7,7 +7,7 @@
 6. complex64/complex128
 7. [nil](types/nil.md)
 # Составные
-1. [array](types/array.md)
+1. [array](../types/array.md)
 2. [slice](types/slice.md)
 3. [map](types/map.md)
 4. [chan](types/chan.md)
