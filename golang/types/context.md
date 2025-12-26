@@ -18,7 +18,7 @@ func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 - Вызов cancelFunc (cf) отправляет в ctx.Done канал информацию.
 - Вызов идемпотентен
 - Вызов cancelFunc в другой функции - **антипаттерн**.
-- Вызывайте cancelFunc с [defer](defer.md), чтобы автоматически отменить при выходе из функции
+- Вызывайте cancelFunc с [defer](interview/defer.md), чтобы автоматически отменить при выходе из функции
 ```go
 ctx, cf := context.WithCancel(parentCtx)
 
@@ -101,8 +101,8 @@ func main() {
 }
 ```
 ## Как не допустить перекрытия
-Используя [определения](struct.md#Псевдонимы%20и%20определения), можно создать определение для нужного типа.
-Так как WithValue принимает [empty interface](interface.md#Empty%20interface%20(any)), он сохраняет динамиеский тип и значение. И перекрытия не будет, так как типы key1 и key2 **РАЗНЫЕ**:
+Используя [определения](types/struct.md#Псевдонимы%20и%20определения), можно создать определение для нужного типа.
+Так как WithValue принимает [empty interface](types/interface.md#Empty%20interface%20(any)), он сохраняет динамиеский тип и значение. И перекрытия не будет, так как типы key1 и key2 **РАЗНЫЕ**:
 ```go
 func main() {
 	type key1 string //type definition
