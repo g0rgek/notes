@@ -16,4 +16,5 @@
 7. [function](types/function.md)
 8. [time.Time](types/time.Time.md)
 9. [contextcontext](types/context.md)
-![](Pasted%20image%2020251128142058.png)
+
+![](imgs/types.png)
