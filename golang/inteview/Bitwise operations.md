@@ -1,0 +1,119 @@
+# Helpers
+Эти функции достаточно малы (дешевы), и могут быть заинлайнены в коде. Поэтому их вызов бесплатен и производительность битовых операций сохраняется.
+```go
+package main
+
+// У четных чисел последний бит равен нулю
+func isEven(number int) bool {
+	return number & 1 == 0
+}
+
+// 1. 0001 0000 = 16 > 0
+// 2. 0000 1111 = 15
+// --&----------
+// 3. 0000 0000 = 0 -> true
+func isPowerOfTwo(value int) {
+	return value > 0 && value&(value-1) == 0
+}
+
+func ResetBit(number, index int) {
+	return number & ^(1 << index)
+}
+
+func InverseBit(number, index int) {
+	return number ^ (1 << index)
+}
+
+func SetBit(number, index int) {
+	return number | (1 << index)
+}
+```
+# Convert data sizes
+![[Pasted image 20251129214958.png]]
+# Bitmask
+![[Pasted image 20251129215416.png]]
+# Bitmap
+Каждый элемент массива (барбершоп) представлен как int8 число. Оно показывает какие услуги доступны в этом заведении. Если нам нужно найти такое заведение, в котором есть определенный набор услуг, мы можем использовать битовые маски. Массив содержит все заведения, по которым ведется поиск. Данная реализация ищет только те заведения, которые в точности удовлетворяют паттерну.
+```go
+package main
+
+import "fmt"
+
+/*
+0000 0001 - есть приставка
+0000 0010 - можно с животным
+0000 0100 - есть напитки
+0000 1000 - есть живая музыка
+0001 0000 - есть запись
+*/
+
+func searchByPattern(pattern int8, bitmaps []int8) []int {
+	var indexes []int
+	for index, bitmap := range bitmaps {
+		if bitmap^pattern == 0 {
+			indexes = append(indexes, index)
+		}
+	}
+
+	return indexes
+}
+
+func main() {
+	barbershops := []int8{
+		0b00001101,
+		0b00000001,
+		0b00010000,
+	}
+
+	pattern := int8(0b00000001) // приставка + животные + напитки
+	indexes := searchByPattern(pattern, barbershops)
+	fmt.Println(indexes)
+}
+
+```
+# Convert IPv6 to uint32 value
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+)
+
+func Convert(address string) (uint32, error) {
+	const octetCount = 4
+	segments := strings.Split(address, ".")
+	if len(segments) != octetCount {
+		return 0, errors.New("invalid IPv4 address")
+	}
+
+	var result uint32
+	for idx :=0; i < octetCount; idx++ {
+		number, err := strconv.Atoi(segments[idx])
+		if err != nil{
+			return 0, err
+		}
+
+		if number < 0 || number > 255 {
+			return 0, fmt.Errorf("invalid IPv4 octet: %d", number)
+		}
+
+		bitOffset := (octetCount - idx - 1) * 8
+		result |= uint32(number << bitOffset)
+	}
+
+	return result, nil
+}
+
+// 255 11111111
+// 255 11111111
+//   6 00000110
+//   0 00000000
+func main() {
+	address, err := Convert("255.255.6.0)
+	if err != nil{
+		log.Fatal(err)
+	}
+	fmt.Printf("Address: %b = %d\n", address, address)
+}
+```

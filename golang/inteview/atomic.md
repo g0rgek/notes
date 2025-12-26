@@ -1,0 +1,40 @@
+# API
+- Load
+- Store
+- CompareAndSwap
+
+Главная особенность атомиков - они **не дают переупорядочить** инструкции (строчки кода) компилятору [out of order execution](https://ru.wikipedia.org/wiki/%D0%92%D0%BD%D0%B5%D0%BE%D1%87%D0%B5%D1%80%D0%B5%D0%B4%D0%BD%D0%BE%D0%B5_%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D0%BD%D0%B5%D0%BD%D0%B8%D0%B5).
+
+Можно добиться гарантий очередности выполнения кода и эксклюзивного доступа к данным.
+# Atomic pointer
+Позволяет хранить копию каких-то данных и быстро конкуретно обращаться к ним без блокирования. Но нельзя модифицировать. 
+Если нужно модифицировать - создается копия данных, модифицируется и обновляется atomic.Pointer на новые данные.
+
+Usecase: в драйвере пул бакетов или подключений, которые очень редко модифицируются.
+# Spinlock
+Активное ожидание, которое просто так греется процессор ненужным циклом. Если код в критической секции выполняется быстро, то spinlock будет эффективнее чем смена статуса горутины, перевода в [[mutex#WaitQueue]] и т.д.
+Если в в пустое тело CAS цикла добавить команду `runtime.Gosched()`, то это позволит cделать `context switch` на другую горутину, которая может делать полезную работу.
+```go
+const(
+	locked   = true
+	unlocked = false
+)
+
+type SpinLock struct {
+	state atomic.Bool
+}
+
+func NewSpinLock() *SpinLock{
+	return &SpinLock{}
+}
+
+func (s *SpinLock) Lock() {
+	for !s.state.CompareAndSwap(unlocked, locked){ // useless cpu load
+		// runtime.Gosched()  // switch(yield) to next goroutine
+	}
+}
+
+func (s *SpinLock) Lock() {
+	s.state.Store(unlocked)
+}
+```

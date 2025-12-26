@@ -1,0 +1,2 @@
+If a package p imports package q, the completion of q's init functions happens before the start of any of p's.
+The completion of all init functions is synchronized before the start of the function main.main.

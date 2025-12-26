@@ -1,0 +1,42 @@
+{
+	"nodes":[
+		{"id":"8038f7d0655f34e5","type":"text","text":"  GOLANG","x":-123,"y":80,"width":140,"height":100},
+		{"id":"85bbf16c5d2deabd","type":"file","file":"remote/golang/inteview/Generics.md","x":200,"y":39,"width":400,"height":480},
+		{"id":"34e355ebff0f196d","x":-683,"y":39,"width":400,"height":480,"type":"file","file":"remote/golang/inteview/Reflection.md"},
+		{"id":"d9d0f0d99e7b0d8b","x":-1300,"y":39,"width":360,"height":201,"type":"file","file":"remote/golang/inteview/OOP.md"},
+		{"id":"aaee27fca9e97d93","x":-1940,"y":-220,"width":560,"height":259,"type":"file","file":"remote/golang/inteview/uncomparable types.md"},
+		{"id":"492bdfd6e2f0c45d","x":-1940,"y":-660,"width":560,"height":400,"type":"file","file":"remote/golang/inteview/zero value.md"},
+		{"id":"cf282c282810f7e8","x":-1940,"y":-1100,"width":560,"height":400,"type":"file","file":"remote/golang/inteview/Bitwise operations.md"},
+		{"id":"f9d4e004f4ced99e","x":-1320,"y":-1400,"width":220,"height":490,"type":"file","file":"remote/golang/inteview/Endians.md"},
+		{"id":"d04ba42da43559b5","x":-683,"y":-1400,"width":360,"height":490,"type":"file","file":"remote/golang/inteview/defer.md"},
+		{"id":"7502f8fa592a53e2","x":-310,"y":-1400,"width":345,"height":490,"type":"file","file":"remote/golang/inteview/sync.md"},
+		{"id":"23addafdeb299ed9","x":55,"y":-1400,"width":345,"height":490,"type":"file","file":"remote/golang/inteview/atomic.md"},
+		{"id":"e03cfd22b50542aa","x":420,"y":-1400,"width":400,"height":490,"type":"file","file":"remote/golang/types/sync.Pool.md"},
+		{"id":"87411522797f538f","x":-1080,"y":-1400,"width":360,"height":490,"type":"file","file":"remote/golang/inteview/panic и recover.md"},
+		{"id":"318464ca245f3a1c","x":1020,"y":-700,"width":320,"height":479,"type":"file","file":"remote/golang/inteview/Optimisations.md"},
+		{"id":"7fa9df4737baf203","x":660,"y":-700,"width":320,"height":479,"type":"file","file":"remote/golang/inteview/Unsafe package.md"},
+		{"id":"5111763a9888fcd9","x":228,"y":-700,"width":400,"height":479,"type":"file","file":"remote/golang/inteview/GC.md"},
+		{"id":"dff745ebe4156b66","x":-106,"y":-700,"width":323,"height":480,"type":"file","file":"remote/golang/inteview/Concurrency.md"},
+		{"id":"bec994726155d1cd","x":-523,"y":-700,"width":400,"height":480,"type":"file","file":"remote/golang/inteview/Memory model.md"},
+		{"id":"c08813bebe397170","x":-880,"y":-700,"width":340,"height":479,"type":"file","file":"remote/golang/inteview/error.md"},
+		{"id":"40c948f5e2502fda","x":-1300,"y":-700,"width":400,"height":479,"type":"file","file":"remote/golang/inteview/Data types.md"}
+	],
+	"edges":[
+		{"id":"7e6041d63e42f3cf","fromNode":"8038f7d0655f34e5","fromSide":"right","toNode":"85bbf16c5d2deabd","toSide":"left"},
+		{"id":"d74350bceeb4310f","fromNode":"8038f7d0655f34e5","fromSide":"left","toNode":"34e355ebff0f196d","toSide":"right"},
+		{"id":"656df8c17430d770","fromNode":"8038f7d0655f34e5","fromSide":"top","toNode":"7fa9df4737baf203","toSide":"bottom"},
+		{"id":"1dbd3fec24507063","fromNode":"8038f7d0655f34e5","fromSide":"top","toNode":"318464ca245f3a1c","toSide":"bottom"},
+		{"id":"63058f10d4404708","fromNode":"8038f7d0655f34e5","fromSide":"top","toNode":"5111763a9888fcd9","toSide":"bottom"},
+		{"id":"9c6108f54ea1c76b","fromNode":"5111763a9888fcd9","fromSide":"top","toNode":"e03cfd22b50542aa","toSide":"bottom"},
+		{"id":"eb4b1cd58fb67f52","fromNode":"8038f7d0655f34e5","fromSide":"top","toNode":"dff745ebe4156b66","toSide":"bottom"},
+		{"id":"17a990ce4f3ee570","fromNode":"8038f7d0655f34e5","fromSide":"top","toNode":"bec994726155d1cd","toSide":"bottom"},
+		{"id":"4862b5df92b7c35c","fromNode":"c08813bebe397170","fromSide":"top","toNode":"87411522797f538f","toSide":"bottom"},
+		{"id":"716aef0837b9c834","fromNode":"c08813bebe397170","fromSide":"top","toNode":"d04ba42da43559b5","toSide":"bottom"},
+		{"id":"77315fa9174fd424","fromNode":"40c948f5e2502fda","fromSide":"left","toNode":"cf282c282810f7e8","toSide":"right"},
+		{"id":"e8f609ebc763af5b","fromNode":"40c948f5e2502fda","fromSide":"left","toNode":"492bdfd6e2f0c45d","toSide":"right"},
+		{"id":"ce57374a83616696","fromNode":"40c948f5e2502fda","fromSide":"left","toNode":"aaee27fca9e97d93","toSide":"right"},
+		{"id":"a2acb8b5b14d2624","fromNode":"40c948f5e2502fda","fromSide":"top","toNode":"f9d4e004f4ced99e","toSide":"bottom"},
+		{"id":"67376b3c980844e1","fromNode":"40c948f5e2502fda","fromSide":"bottom","toNode":"d9d0f0d99e7b0d8b","toSide":"top"},
+		{"id":"b90f2dd08f145bec","fromNode":"8038f7d0655f34e5","fromSide":"top","toNode":"40c948f5e2502fda","toSide":"bottom"}
+	]
+}

@@ -1,0 +1,159 @@
+```go
+type error interface {
+	Error() string
+}
+```
+
+Тип `error` это [[interface]].
+
+---
+# Declaration
+Название ошибки **всегда начинается** с Err.
+Тип ошибки **всегда заканчивается** на Error.
+
+```go
+const ErrorPlain = errors.New("error text") //plain text
+var ErrorFormat = fmt.Errorf("formatted %s", "error") //formatted
+var DatabaseError struct{} //custom type
+```
+# Wrapping
+
+С версии `Go 1.13` появилась новая директива форматирования `%w`. Она возвращает тип ошибки, который будет иметь метод `Unwrap()`. Это позволяет использовать `errors.Is()` и `errors.As()`, чтобы сравнивать обернутые ошибки:
+
+```go
+var ErrorPlain = errors.New("error text")
+err := fmt.Errorf("wrapped error: %w", ErrorPlain)
+```
+
+Такие ошибки можно сравнивать и разворачивать. Если развернуть необернутую ошибку, то получим [[nil]]:
+
+```go
+fmt.Println(err.Error()) //wrapped error: error text
+fmt.Println(errors.Unwrap(err)) //error text
+fmt.Println(errors.Unwrap(errors.Unwrap(err))) //<nil>
+```
+
+Нельзя оборачивать сразу несколько ошибок за раз. При попытке развернуть такую ошибку мы получим [[nil]]:
+```go
+var e1 = errors.New("err1")
+var e2 = errors.New("err2")
+err := fmt.Errorf("additional error: %w and %w", e1,e2)
+
+fmt.Println(errors.Unwrap(err)) //<nil>
+```
+# Unwrapping
+Для проверки типа ошибки используется `errors.As()`. Метод в цикле разворачивает ошибку и проверяет имеется ли нужный тип ошибки внутри:
+
+```go
+type DbError struct{}
+func (DbError) Error() string{
+	return "db error"
+}
+
+func main(){
+	err := fmt.Errorf("error occured: %w", DbError{})
+	if errors.As(err, &DbError{}){} // <--- loop unwraping
+}
+```
+
+Для проверки содержимого ошибки используется `errors.Is()`. Она проверяет содержимое ошибки:
+
+```go
+var ErrCustom = errors.New("custom err")
+
+func main(){
+	err := fmt.Errorf("error occured: %w", ErrCustom)
+	if errors.Is(err, ErrCustom){} // <--- loop unwrapping
+}
+```
+Каждый из этих методов **в цикле разворачивает ошибку** и сравнивает по указанному условию.
+# Best practice
+## Always declare const errors
+Если объявить глобальный тип ошибки через `var`, то ее можно будет изменить из другого пакета. Всегда объявляйте глобальные ошибки через `const`:
+
+```go
+const ErrDb = errors.New("parsing error")
+```
+## Wrap code block name into errors
+Если функция/метод возвращает ошибку, то хорошей практикой будет определить строковой константой `op` имя этого блока кода:
+
+```go
+func mayFail() error{
+	const op = "mayFail"
+	//...
+	if err != nil{
+		fmt.Errorf("%s: %w", op, err)
+	}
+}
+```
+
+Когда ошибка будет прокидываться вверх по стеку, в сообщении будут написаны все участки кода, через которые прошла эта ошибка. Это позволит легко определить место в коде, которое вернуло ошибку.
+## Prevent == operator usage by wrapping
+Иногда ошибки специально оборачивают без доп. информации:
+
+```go
+var ErrPermission = errors.New("access denied")
+
+func ProcessError() error{
+	if !HasPersmission(){
+		return fmt.Errorf("%w", ErrPermission)
+	}
+	//...
+}
+```
+Так делают для того, чтобы нельзя было использовать оператор `==` для ошибок. Разработчик с самого начала должен использовать `errors.Is()/errors.As()`.
+# Hacks
+Мы можем проверить поведение ошибки. 
+Если есть необходимость обойтись без импорта типа из другого пакета, можно использовать [type assertion](<interface.md#Type assertion#Анонимные интерфейсы>):
+```go
+/**
+package b
+
+type ErrFromAnotherPackage struct{}
+func (e ErrFromAnotherPackage) Error() string{}
+func (e ErrFromAnotherPackage) Path() string{}
+**/
+package main
+
+func isFsError(e error) bool{
+	_,ok := err.(interface{ Path() string }) // <--- type assertion
+	return ok
+}
+
+func main(){
+	err := getErrorFromAnotherPackage()
+	if isFsError(err){}
+}
+```
+# Stacktrace
+Внешний пакет `github.com/pkg/errors` имеет совместимое с пакетом `errors` API, и позволяет выводить стектрейс ошибки:
+
+```go
+func New(message) string{
+	return &fundamential{
+		msg: message,
+		stack: callers()
+	}
+}
+```
+
+Когда мы печатаем ошибку со специальным форматированием `%+v`, будет выведен стектрейс ошибки, вместе с ее сообщением.
+```go
+package main
+
+import "github.com/pkg/errors"
+
+
+func Do() error{
+	return errors.New("error from func")
+}
+
+func main(){
+	value, err := Do()
+	if err != nil{
+		fmt.Printf("%+v", err) // <--- magic here
+	}
+}
+```
+
+**ВАЖНО**: сбор стектрейса негативно сказывается на производительности. Использовать только по необходимости.

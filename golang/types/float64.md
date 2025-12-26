@@ -1,0 +1,1 @@
+Реализованы по стандарту [IEEE-754](https://habr.com/ru/articles/337260/).

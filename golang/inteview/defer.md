@@ -1,0 +1,297 @@
+# Определение
+Ключевое слово `defer` откладывает исполнение некоторой функции на момент после return:
+```go
+func run() {
+	defer foo() // runtime.deferproc(foo)
+	defer bar() // runtime.deferproc(bar)
+    
+	return
+}               // runtime.deferreturn()
+```
+Эти функции буду выполнены в обратном порядке. Т.е. мы кладем вызовы на [стек](<0.  Description>) и выполнение начинается с последнего вызванного `defer`.
+# Аргументы defer
+
+## Порядок вычисления
+Функции откладываются с заранее вычисленными аргументами. Сначала вычисляется значение функции `get()`, только потом `handle(get())` откладывается:
+```go
+package main
+
+import "fmt"
+
+func handle(string) {}
+
+func get() string {
+	fmt.Println("get")
+	return ""
+}
+
+func process() {
+	defer handle(get())
+	fmt.Println("process")
+}
+
+func main() { // get
+	process() // process
+}
+```
+## Область видимости
+Defer делает **снимок(слепок) стека** при вызове. Переданные аргументы копируются внутрь стека функции defer on the fly:
+### Пример 1
+```go
+package main
+
+import "fmt"
+
+func notify(status string) {
+	fmt.Println(status)
+}
+
+func process() {
+	var status string
+	defer func(s string) {
+		notify(s)
+	}(status)
+
+	status = "error"
+}
+
+func main() {
+	process() // пустая строка
+}
+```
+### Пример 2
+Если изменить [получателя](<struct.md#Методы структуры>) на указатель, то напечатает "bar" (иначе "foo"):
+```go
+package main
+
+import "fmt"
+
+func main() {
+	s := Struct{id: "foo"}
+	defer s.print() // s вычисляется немедленно
+	s.id = "bar"    // обновление s.id (невидимое)
+}
+
+type Struct struct {
+	id string
+}
+
+func (s Struct) print() {
+	fmt.Println(s.id) // foo
+}
+```
+### Как починить?
+- Вспомнить, что [[Замыкание захватывает по указателю]]
+- Передавать указатель на переменную (в замыкание/метод)
+## Откладывание nil функций
+[[zero value]] для функций является [[nil]]. Очевидно, если передать nil в `runtime.deferproc()`, то при вызове получим `nil pointer dereference`:
+```go
+package main
+
+import "fmt"
+
+func main() {
+	var f func() // = nil
+	defer f() // nil pointer dereference
+
+	f = func() {
+		fmt.Println(true)
+	}
+}
+```
+# Изменение  возвращаемых значений
+## Именованные
+У функций могут быть [[function#Именованные возвращаемые результаты]]. Defer умеет модифицировать такие аргументы.
+По сути, это [[Замыкание захватывает по указателю]] и изменяет значение.
+```go
+package main
+
+import "fmt"
+
+func Modify(value int) (result int) {
+	defer func() {
+		result += value // 10+5 = 15
+	}()
+
+	return value + value // 5+5=10
+}
+
+func main() {
+	fmt.Println(Modify(5)) // 15
+}
+```
+## Неименованные
+А вот с неименованными так не получится, изменения не будет.
+```go
+package main
+
+import "fmt"
+
+func Modify(value int) int {
+	var result int
+	result = value + value // 10
+
+	defer func() {
+		result += value // won't work
+	}()
+
+	return result
+}
+
+func main() {
+	fmt.Println(Modify(5)) // 10
+}
+```
+
+# Defer внутри цикла
+## Антипаттерн
+defer выполняется только при выходе **ИЗ ФУНКЦИИ**, а не из **ОБЛАСТИ ВИДИМОСТИ (итерации цикла)**.
+defer по своей природе является такой же структурой (как [[slice]], [[interface]], [[chan]] и т.д.). В случае defer в цикле происходит [escaping](<Escape analysis.md>) структур в кучу:
+```go
+package main
+
+import "os"
+
+func readFiles(paths []string) error {
+	for _, path := range paths {
+		file, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		// reading file...
+		defer file.Close() // стек разбухает от defer
+	}
+
+	{
+		file, _ = os.Open("")
+		defer file.Close() // выполнится только после return
+	}
+
+	return nil
+}
+
+func main() {
+	_ = readFiles([]string{"text1.txt", "text2.txt", "text3.txt"})
+}
+```
+Runtime автоматически закрывает файлы с помощью [финализаторов](<GC.md#Финализаторы>), чтобы уберечь программиста.
+## Решение
+в качестве решения вызываем отдельную функцию с логикой для каждой итерации с defer - в таком случае каждый вызов отработает по выходе из этой функции
+```go
+// iter num: 0
+// 1
+// iter num: 1
+// 2
+// iter num: 2
+// 3
+// iter num: 3
+// 4
+// iter num: 4
+// 5
+func rangeDeferPerIteration() {
+  for i := range 5 {
+    fmt.Println("iter num:", i)
+    _ = simpleAdd(i)
+  }
+}
+
+func simpleAdd(i int) (res int) {
+  defer func() {
+    fmt.Println(res)
+  }()
+
+  return i + 1
+}
+```
+# Defer inlining
+С версии `go 1.14` появилось [встраивание](<function.md#Встраивание функций> ) defer в простых случаях.
+# Когда defer отработает?
+## Таблица
+
+| Механизм            |                          Выполняются `defer`? | Завершает горутину или процесс?                                                                      | Примечание                            |
+| ------------------- | --------------------------------------------: | ---------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| `runtime.Goexit()`  |                       Да (в текущей горутине) | Завершает текущую горутину                                                                           | Другие горутины продолжают работать   |
+| [[panic и recover]] | Да (defer выполняются при распутывании стека) | Если не перехвачен — завершает горутину и, при достижении вершины, печатает стек и завершает процесс | `recover` в `defer` может перехватить |
+| `os.Exit(code)`     |                                           Нет | Завершает **весь** процесс немедленно                                                                | Финализаторы/деферы не выполняются    |
+
+## `runtime.Goexit()`
+
+- Заканчивает **текущую** горутину. Перед фактическим завершением выполняются все отложенные (`defer`) вызовы в этой горутине.
+- `Goexit` не возвращает управление вызывающему коду (функция не вернётся).
+- Процесс в целом не завершается: другие горутины продолжают выполняться. Если `Goexit` вызван в `main`-горутине и больше нет других живых горутин, программа завершится только потому, что не останется активных горутин.
+
+**Пример:**
+
+```go
+package main
+
+import (
+    "fmt"
+    "runtime"
+    "time"
+)
+
+func main() {
+    go func() {
+        defer fmt.Println("defer in goroutine")
+        fmt.Println("goroutine about to Goexit")
+        runtime.Goexit()
+        // сюда управление не вернётся
+    }()
+
+    time.Sleep(100 * time.Millisecond)
+    fmt.Println("main continues")
+}
+```
+
+**Ожидаемый вывод:**
+
+```
+goroutine about to Goexit
+defer in goroutine
+main continues
+```
+## `os.Exit(code)`
+
+- Немедленно завершает **весь** процесс с указанным кодом возврата.
+- **Не** выполняет `defer` в какой бы то ни было горутине. Также [[GC#Финализаторы]] не гарантируются к выполнению, сборщик мусора не будет принудительно запускаться, буферы стандартного вывода/записи могут остаться неслитыми.
+
+**Пример:**
+
+```go
+package main
+
+import (
+    "fmt"
+    "os"
+)
+
+func main() {
+    defer fmt.Println("defer in main")
+    fmt.Println("about to os.Exit")
+    os.Exit(1)
+    // defer выше не выполнится
+}
+```
+
+**Ожидаемый вывод:**
+
+```
+about to os.Exit
+```
+
+# Задачи
+## Задача 1 
+![[Pasted image 20240602110516.png]]
+Answer: 1
+## Задача 2
+![[Pasted image 20240602165347.png]]
+Answer: 2020, 20, 10
+При захвате defer переменной, производится снимок(слепок) стека.
+
+## Задача 3
+![[Pasted image 20251128233202.png]]Аргументы функции для defer вычисляются в момент объявления. Аргумент положится на стек, после чего функция будет вызвана с этим аргументом.
+Чтобы получить значение, которые было в конце функции - необходимо обернуть вызов в лямбду (анонимную функцию).
+## Задача 4
+![[Pasted image 20251128233642.png]]
+defer может изменять возвращаемое значение. Это полезно при обработке [[panic и recover]]
