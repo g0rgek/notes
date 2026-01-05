@@ -13,16 +13,16 @@
 	}
 	```
 	- нельзя: сравнивать, брать адрес;
-- [[zero value]] функции - [[nil]]
+- [1.3 zero value](1.3%20zero%20value.md) функции - [nil](nil.md)
 - Есть прототипы функций (объявление без тела). Реализацию можно написать на ASM.
 - Нельзя перегружать функции
 - Нет параметров по умолчанию
 - Нет RVO(return value optimization) и NRVO (named return optimization).  Если функция возвращает инициализированный объект, мы копируем это значение при возврате.  Можно передать в функцию указатель на этот объект и инициализировать (copy elision).
 - Нет хвостовой рекурсии. Когда функция заканчивается вызовом самой себя, тогда компилятор разворачивает в цикл с одним стек-фреймом, просто меняя локальные переменные от итерации к итерации.
 # Передача аргументов
-Все аргументы при [передаче в функцию](<Passing by value.md>) **копируются**!
+Все аргументы при [передаче в функцию](Passing%20by%20value.md) **копируются**!
 # Variadic parameters
-Функция может принимать аргументы переменной длины последними в списке аргументов. На самом деле, это [[slice]] аргументов.
+Функция может принимать аргументы переменной длины последними в списке аргументов. На самом деле, это [slice](slice.md) аргументов.
 ```go
 func process(data string, tokens ...int){
 	// impl...
@@ -104,7 +104,7 @@ func BenchmarkMaxWithInline(b *testing.B) {
 	_ = r
 }
 ```
-## [[defer]] prevents inline
+## [2.2 defer](2.2%20defer.md) prevents inline
 ```go
 func defered(a, b int) int { // cannotInlineFunction (op DEFER)
 	defer fmt.Println("jopa")
@@ -148,7 +148,7 @@ func main(){
 }
 ```
 
-Такой подход используется в [[mutex]]:
+Такой подход используется в [mutex](mutex.md):
 ```go
 func (m *Mutex) Lock() {
 	// Fast path: grab unlocked mutex.
@@ -162,7 +162,7 @@ func (m *Mutex) Lock() {
 	m.lockSlow()
 }
 ```
-## [[panic и recover#recover]] prevents inline
+## [recover](2.1%20panic%20и%20recover.md#recover) prevents inline
 
 ```go
 func recovered(a, b, weighth int) int { // cannotInlineFunction (call to recover)
@@ -174,7 +174,7 @@ func recovered(a, b, weighth int) int { // cannotInlineFunction (call to recover
 	return b
 }
 ```
-## go prevents inline
+## go-word prevents inline
 ```go
 func (t *tickerProcesser) run() { // cannotInlineFunction (op GO)
 	go func() {
@@ -185,7 +185,7 @@ func (t *tickerProcesser) run() { // cannotInlineFunction (op GO)
 }
 ```
 # Анонимные функции
-[[Замыкание захватывает по указателю]]
+[Замыкание захватывает по указателю](Замыкание%20захватывает%20по%20указателю.md)
 # Функции высшего порядка
 Это функция, которая принимает другие функции как входные аргументы или возвращает функцию.
 ```go
@@ -216,7 +216,7 @@ func pureFunc(x,y int) {
 ## Генератор
 ### Последовательный
 Функция, которая ссылается на свободные переменные области видимости своей родительской функции. `Generator` является функцией высшего порядка, она возвращает  анонимную функция (замыкание). 
-И это [[Замыкание захватывает по указателю]] переменную number. Очевидно, произойдет [[Escape analysis#Случаи когда 100% будет escape]]. Потому что мы вышли из области видимости `func Generator()`, но продолжаем ссылаться на `number`. 
+И это [замыкание захватывает по указателю](Замыкание%20захватывает%20по%20указателю.md) переменную number. Очевидно, произойдет [escape](Escape%20analysis.md#Случаи%20когда%20будет%20escape). Потому что мы вышли из области видимости `func Generator()`, но продолжаем ссылаться на `number`. 
 В итоге, будем получать последовательные значения при каждом вызове функции.
 ```go
 package main
@@ -268,7 +268,7 @@ func main() {
 }
 ```
 ## Ленивые вычисления
-Создание [[map]] будет произведено только при первом вызове `data()`:
+Создание [map](map.md) будет произведено только при первом вызове `data()`:
 ```go
 package main
 

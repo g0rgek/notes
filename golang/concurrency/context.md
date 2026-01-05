@@ -18,7 +18,7 @@ func WithTimeout(parent Context, timeout time.Duration) (Context, CancelFunc) {
 - Вызов cancelFunc (cf) отправляет в ctx.Done канал информацию.
 - Вызов идемпотентен
 - Вызов cancelFunc в другой функции - **антипаттерн**.
-- Вызывайте cancelFunc с [defer](interview/defer.md), чтобы автоматически отменить при выходе из функции
+- Вызывайте cancelFunc с [2.2 defer](2.2%20defer.md), чтобы автоматически отменить при выходе из функции
 ```go
 ctx, cf := context.WithCancel(parentCtx)
 

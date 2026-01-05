@@ -1,8 +1,8 @@
-Является [[zero value]] для некоторых типов.
+Является [1.3 zero value](1.3%20zero%20value.md) для некоторых типов.
 # Typed nil
 ## Определение
 В Go значение `nil` само по себе **не имеет типа**. Но любая переменная _имеет тип_.  
-Поэтому, при присваивании `nil` переменной с типом [[interface]], например:
+Поэтому, при присваивании `nil` переменной с типом [interface](interface.md), например:
 
 ```go
 var r io.Reader = nil
@@ -20,7 +20,7 @@ var e error = (*MyError)(nil)
 fmt.Println(e == nil) // false; itab!=nil, data=nil
 ```
 ## Почему  
-Потому что [[interface]] в Go устроен так:
+Потому что [interface](interface.md) в Go устроен так:
 
 ```go
 type iface struct{
@@ -29,7 +29,7 @@ type iface struct{
 }
 ```
 
-Когда присваиваеncz `(*MyError)(nil)` переменной типа [[error]]:
+Когда присваиваеncz `(*MyError)(nil)` переменной типа [2. error](2.%20error.md):
 - `tab = *MyError`
 - `data = nil`
 
@@ -52,6 +52,6 @@ return err // typed nil → превращается в non-nil error
 ```
 
 # Задача 1
-![[Pasted image 20251128234759.png]]
+![Pasted image 20251128234759.png](Pasted%20image 20251128234759.png.md)
 Ответ: выведется hello, так как мы никак не взаимодействуем с myTypePointer. Никакого `nil pointer dereference` не будет.
-![[Pasted image 20251128234902.png]]
+![Pasted image 20251128234902.png](Pasted%20image 20251128234902.png.md)

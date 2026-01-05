@@ -1,11 +1,11 @@
-## [[map]] & [[rwmutex]] VS sync.Map 
+## [map](map.md) & [rwmutex](rwmutex.md) VS sync.Map 
 sync.Map выигрывает по перфу мапу с мьютексом только когда у процессора >=64 ядра.
 
-Внутри используются 2 [[map]]:
+Внутри используются 2 [map](map.md):
 - Read map
-	- Построена на атомиках [[atomic#Atomic pointer]]
+	- Построена на атомиках [atomic#Atomic pointer](4.2%20atomic.md#Atomic%20pointer.md)
 	- Можно только модифицировать данные
-	- Удаляемые данные становятся [[nil]]
+	- Удаляемые данные становятся [nil](nil.md)
 - Dirty map with Mutex
 
 sync.Map оптимизирована для двух случаев: 

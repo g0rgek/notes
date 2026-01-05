@@ -1,4 +1,4 @@
-# String to byte [[slice]]
+# String to byte [slice](slice.md)
 ```go
 package main
 
@@ -14,10 +14,10 @@ func main() {
 	fmt.Println(slice)
 }
 ```
-unsafe.Slice возвращает [[slice]] header - структуру из 3х машинных слов. Она размещается на стеке или куче, в зависимости от [[Escape analysis]]. Но compile-time [[string]] неизменяемые - они лежат в области text программы и не могут быть изменены.
+unsafe.Slice возвращает [slice](slice.md) header - структуру из 3х машинных слов. Она размещается на стеке или куче, в зависимости от [Escape analysis](Escape%20analysis.md). Но compile-time [string](string.md) неизменяемые - они лежат в области text программы и не могут быть изменены.
 
 Если попытаться изменить элемент строки (которая не была аллоцирована на стеке или хипе) по индексу - будет паника, так как строковый литерал `"abc"` лежит в READ-ONLY (TEXT) сегменте программы.
-# Byte [[slice]] to String
+# Byte [slice](slice.md) to String
 ```go
 package main
 
