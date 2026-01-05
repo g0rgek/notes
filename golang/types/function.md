@@ -148,7 +148,7 @@ func main(){
 }
 ```
 
-Такой подход используется в [mutex](mutex.md):
+Такой подход используется в [mutex](concurrency/mutex.md):
 ```go
 func (m *Mutex) Lock() {
 	// Fast path: grab unlocked mutex.

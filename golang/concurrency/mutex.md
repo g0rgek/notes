@@ -62,7 +62,7 @@ func (fb *FooBar) Bar(printFoo func()) {
 ```
 
 # WaitQueue
-Внутри mutex используется очередь заблокированных горутин. Она представлена как сбалансированное дерево. Реализована [структурой sudog](chan.md#sendq%20&%20recvq), которая используется в waitq/recvq у каналов.
+Внутри mutex используется очередь заблокированных горутин. Она представлена как сбалансированное дерево. Реализована [структурой sudog](concurrency/chan.md#sendq%20&%20recvq), которая используется в waitq/recvq у каналов.
 ```go
 // Asynchronous semaphore for sync.Mutex.
 

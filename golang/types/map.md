@@ -42,7 +42,7 @@ type hmap struct {
 1. Чтение  - zero value
 2. Запись - panic (assign to nil map)
 ## Concurrency 
-Начиная с `go 1.8`, конкурентный доступ к map без использования [mutex](mutex.md) или [4.2 atomic](4.2%20atomic.md) приводит к fatal error. 
+Начиная с `go 1.8`, конкурентный доступ к map без использования [mutex](concurrency/mutex.md) или [4.2 atomic](4.2%20atomic.md) приводит к fatal error. 
 
 ```md
 Maps are not safe for concurrent use: it's not defind what happens when you read and write to them simultaneously.

@@ -1,4 +1,4 @@
-## [map](map.md) & [rwmutex](rwmutex.md) VS sync.Map 
+## [map](map.md) & [rwmutex](concurrency/rwmutex.md) VS sync.Map 
 sync.Map выигрывает по перфу мапу с мьютексом только когда у процессора >=64 ядра.
 
 Внутри используются 2 [map](map.md):
