@@ -3,7 +3,7 @@ sync.Map выигрывает по перфу мапу с мьютексом т�
 
 Внутри используются 2 [map](map.md):
 - Read map
-	- Построена на атомиках [atomic#Atomic pointer](4.2%20atomic.md#Atomic%20pointer.md)
+	- Построена на атомиках [atomic pointer](4.2%20atomic.md#Atomic%20pointer.md)
 	- Можно только модифицировать данные
 	- Удаляемые данные становятся [nil](nil.md)
 - Dirty map with Mutex

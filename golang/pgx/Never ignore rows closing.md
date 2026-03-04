@@ -1,6 +1,6 @@
 ## Scoped Query method
 Так как rows игнорируется - они никогда не будут закрыты.
-Acquire у пула будет висеть и Pool.Close() заблокируется навсегда. 
+Í
 ```go
 if _, err := Pool.Query(ctx, sql, args...); err != nil{
 	print(err)

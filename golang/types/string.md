@@ -34,7 +34,7 @@ func main(){
 ## USC-2
 - В начало добавляется 2 доп. байта | FE | FF |
 - Их называют **BOM (byte order mask)**
-- FE - little-[1.5 Endians](1.5%20Endians.md)
+- FE - little-[Endian](../1.5%20Endians.md)
 - FF - big-endian
 ## UTF-8
 - Коды символов переменной длины от 1 до 4 байт (битовые маски)
@@ -91,7 +91,7 @@ func main() {
 }
 ```
 # Range over string
-Когда итерируемся по строке, мы итерируемся по [rune](rune.md)(!!!), а не по байтам. Так как некоторое руны занимают несколько байт, индекс может перепрыгивать некоторые значения.
+for range итерируется по [rune](rune.md)(!!!), а не по байтам. Так как некоторое руны занимают несколько байт, индекс может перепрыгивать некоторые значения.
 ```go
 package main
 
@@ -285,7 +285,7 @@ func concatstring5(buf *tmpBuf, a0, a1, a2, a3, a4 string) string {
 ```
 ## Conversion optimisations
 Не вызывают аллокаций преобразования:
-- `string -> []byte` в рамках [slice](slice#Range%20over%20slice)
+- `string -> []byte` в рамках [for-range](slice#Range%20over%20slice)
 - `[]byte -> string` как ключа [map](map.md)
 - `[]byte -> string` при сравнении
 - `[]byte -> string` которое используется при конкатенации строк (одно из значений объединенной строки должно являться непустой строковой константой)
@@ -338,7 +338,7 @@ func main() {
 }
 ```
 ## Escape Analysis & Stack Allocation
-Если  [escape analysis](<Escape%20analysis.md>) решил что функция не покидает скоуп функции, то Go может про аллоцировать строку на [стеке горутины](Стек%20горутины.md).
+Если [escape analysis](../memory%20model/Escape%20analysis.md) решил что переменная не покидает scope функции, то Go может про аллоцировать строку на [стеке горутины](../memory%20model/Стек%20горутины.md).
 ```go 
 func foo() {
 	s := "short" // May stay on the stack.
